@@ -1,27 +1,65 @@
 ﻿using MDA.Models;
 using System.Diagnostics;
+using System.Text;
 
-Console.OutputEncoding = System.Text.Encoding.UTF8;
+Console.OutputEncoding = Encoding.UTF8;
 var rest = new Restaurant();
 while (true)
 {
-    Console.WriteLine("Привет! Желаете забронировать столик?\n1 - мы уведомим вас по смс (асинхронно)\n2- подождите на линии, мы вас оповестим (синхронно)");
+    var strBuilder = new StringBuilder();
+    strBuilder.Append("Привет! Желаете забронировать столик или снять бронь?");
+    strBuilder.Append("\n1 - забронировать, мы уведомим вас по смс (асинхронно).");
+    strBuilder.Append("\n2 - забронировать, подождите на линии, мы вас оповестим (синхронно).");
+    strBuilder.Append("\n3 - снять бронь, мы уведомим вас по смс (асинхронно).");
+    strBuilder.Append("\n4 - снять бронь, подождите на линии, мы вас оповестим (синхронно).");
 
-    if (!int.TryParse(Console.ReadLine(), out var choice) && choice is not (1 or 2))
+    Console.WriteLine(strBuilder.ToString());
+
+    int.TryParse(Console.ReadLine(), out var choice);
+    if (choice > 4 || choice < 1)
     {
-        Console.WriteLine("Введите, пожалуйста, 1 или 2");
+        Console.WriteLine("Введите, пожалуйста, любой номер из указанных выше.");
+        continue;
+    }
+
+    switch (choice)
+    {
+        case 1:
+        case 2:
+            Console.WriteLine("Введите, пожалуйста, количество гостей.");
+            break;
+        case 3:
+        case 4:
+            Console.WriteLine("Введите, пожалуйста, номер столика.");
+            break;
+        default:
+            break;
+    }
+    int.TryParse(Console.ReadLine(), out var attribute);
+    if (attribute < 1)
+    {
+        Console.WriteLine("Введите, пожалуйста, положительное число.");
         continue;
     }
 
     var stopWatch = new Stopwatch();
     stopWatch.Start();
-    if (choice == 1)
+    switch (choice)
     {
-        rest.BookFreeTableAsync(1);
-    }
-    else
-    {
-        rest.BookFreeTable(1);
+        case 1:
+            rest.BookFreeTableAsync(attribute);
+            break;
+        case 2:
+            rest.BookFreeTable(attribute);
+            break;
+        case 3:
+            rest.FreeBookedTableAsync(attribute);
+            break;
+        case 4:
+            rest.FreeBookedTable(attribute);
+            break;
+        default:
+            break;
     }
 
     Console.WriteLine("Спасибо за обращение!");
