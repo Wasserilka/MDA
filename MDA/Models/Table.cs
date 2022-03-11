@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MDA.Models
 {
-    public class Table
+    public class Table 
     {
         public int Id { get; }
         public State State { get; private set; }

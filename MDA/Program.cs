@@ -1,9 +1,11 @@
-﻿using MDA.Models;
+﻿using MDA.Communication;
+using MDA.Models;
 using System.Diagnostics;
 using System.Text;
 
 Console.OutputEncoding = Encoding.UTF8;
-var rest = new Restaurant();
+var communicationAgent = new CommunicationAgent();
+var rest = new Restaurant(communicationAgent);
 while (true)
 {
     var strBuilder = new StringBuilder();
@@ -18,7 +20,7 @@ while (true)
     int.TryParse(Console.ReadLine(), out var choice);
     if (choice > 4 || choice < 1)
     {
-        Console.WriteLine("Введите, пожалуйста, любой номер из указанных выше.");
+         communicationAgent.SendMessage("Введите, пожалуйста, любой номер из указанных выше.");
         continue;
     }
 
@@ -26,11 +28,11 @@ while (true)
     {
         case 1:
         case 2:
-            Console.WriteLine("Введите, пожалуйста, количество гостей.");
+             communicationAgent.SendMessage("Введите, пожалуйста, количество гостей.");
             break;
         case 3:
         case 4:
-            Console.WriteLine("Введите, пожалуйста, номер столика.");
+             communicationAgent.SendMessage("Введите, пожалуйста, номер столика.");
             break;
         default:
             break;
@@ -38,7 +40,7 @@ while (true)
     int.TryParse(Console.ReadLine(), out var attribute);
     if (attribute < 1)
     {
-        Console.WriteLine("Введите, пожалуйста, положительное число.");
+         communicationAgent.SendMessage("Введите, пожалуйста, положительное число.");
         continue;
     }
 
@@ -62,7 +64,7 @@ while (true)
             break;
     }
 
-    Console.WriteLine("Спасибо за обращение!");
+    communicationAgent.SendMessage("Спасибо за обращение!");
     stopWatch.Stop();
     var ts = stopWatch.Elapsed;
     Console.WriteLine($"{ts.Seconds:00}:{ts.Milliseconds:00}");
