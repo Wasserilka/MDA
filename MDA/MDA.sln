@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDA", "MDA.csproj", "{EA1C0C29-E539-4BA7-B3E3-354AAE287F05}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Booking", "Booking.csproj", "{EA1C0C29-E539-4BA7-B3E3-354AAE287F05}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notification", "..\Booking\Notification.csproj", "{45A3242A-AF74-494A-BFDE-75B39AF9C802}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messaging", "..\Messaging\Messaging.csproj", "{5B8F6B8D-691B-48B8-8BFB-25DE9C2F85B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{EA1C0C29-E539-4BA7-B3E3-354AAE287F05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA1C0C29-E539-4BA7-B3E3-354AAE287F05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA1C0C29-E539-4BA7-B3E3-354AAE287F05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45A3242A-AF74-494A-BFDE-75B39AF9C802}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45A3242A-AF74-494A-BFDE-75B39AF9C802}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45A3242A-AF74-494A-BFDE-75B39AF9C802}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45A3242A-AF74-494A-BFDE-75B39AF9C802}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B8F6B8D-691B-48B8-8BFB-25DE9C2F85B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B8F6B8D-691B-48B8-8BFB-25DE9C2F85B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B8F6B8D-691B-48B8-8BFB-25DE9C2F85B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B8F6B8D-691B-48B8-8BFB-25DE9C2F85B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

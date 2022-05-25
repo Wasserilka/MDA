@@ -16,7 +16,7 @@ namespace MDA.Models
                 {
                     Task.Run(async () => 
                     {
-                        await Task.Delay(10000);
+                        await Task.Delay(60000);
                         state = State.Free;
                     });
                 }
