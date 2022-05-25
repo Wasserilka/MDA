@@ -1,10 +1,9 @@
-﻿using Booking.Models;
-using System.Text;
-using Booking;
+﻿using System.Text;
 using Microsoft.Extensions.Hosting;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
-using Booking.Consumers;
+using Kitchen;
+using Kitchen.Consumers;
 
 Console.OutputEncoding = Encoding.UTF8;
 CreateHostBuilder(args).Build().Run();
@@ -14,15 +13,15 @@ Host.CreateDefaultBuilder(args).ConfigureServices((hostContext, services) =>
 {
     services.AddMassTransit(x =>
     {
-        x.AddConsumer<BookingKitchenAccidentConsumer>();
-        x.AddConsumer<BookingKitchenReadyConsumer>();
+        x.AddConsumer<KitchenTableBookedConsumer>();
         x.UsingRabbitMq((context, cfg) =>
         {
             cfg.ConfigureEndpoints(context);
         });
     });
 
-    services.AddSingleton<Restaurant>();
+    services.AddSingleton<Accidents>();
+    services.AddSingleton<KitchenState>();
     services.AddSingleton<Notifier>();
     services.AddHostedService<Worker>();
 });

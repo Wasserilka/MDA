@@ -1,4 +1,4 @@
-﻿namespace MDA.Models
+﻿namespace Booking.Models
 {
     public enum State
     {

@@ -1,78 +1,93 @@
 ﻿using Messaging;
 
-namespace MDA.Models
+namespace Booking.Models
 {
     public class Restaurant
     {
-        private readonly List<Table> Tables = new();
-        private readonly Producer Producer;
+        private readonly List<Table> _tables = new();
+        private readonly Notifier _notifier;
 
-        public Restaurant()
+        public Restaurant(Notifier notifier)
         {
-            Producer = new("localhost");
-
             for (int i = 1; i <= 10; i++)
             {
-                Tables.Add(new Table(i));
+                _tables.Add(new Table(i));
             }
+            _notifier = notifier;
         }
 
         public void BookFreeTable(int PersonsCount)
         {
-            Producer.Send("Добрый день! Подождите секунду, я подберу столик и подтвержу вашу бронь, оставайтесь на линии.");
-            
             Thread.Sleep(5000);
-            var table = Tables.FirstOrDefault(t => t.SeatsCount >= PersonsCount && t.State == State.Free);
+            var table = _tables.FirstOrDefault(t => t.SeatsCount >= PersonsCount && t.State == State.Free);
             table?.SetState(State.Booked);
-
-            Producer.Send(table is null
-                ? "К сожалению, сейчас все столики заняты."
-                : $"Готово! Ваш столик под номером {table.Id}.");
         }
 
         public void FreeBookedTable(int tableId)
         {
-            Producer.Send("Добрый день! Подождите секунду, я проверю ваш столик и подтвержу отмену брони, оставайтесь на линии.");
-
             Thread.Sleep(5000);
-            var table = Tables.FirstOrDefault(t => t.Id == tableId && t.State == State.Booked);
+            var table = _tables.FirstOrDefault(t => t.Id == tableId && t.State == State.Booked);
             table?.SetState(State.Free);
-
-            Producer.Send(table is null
-                ? "К сожалению, указанный вами столик не существует или уже свободен."
-                : $"Готово! Столик под номером {table.Id} теперь свободен.");
         }
 
-        public void BookFreeTableAsync(int PersonsCount)
+        public async Task<Table?> BookFreeTableAsync(int PersonsCount, Dish? dish, Guid clientId)
         {
-            Producer.Send("Добрый день! Подождите секунду, я подберу столик и подтвержу вашу бронь, вам придет уведомление.");
+            await Task.Delay(5000);
+            var table = _tables.FirstOrDefault(t => t.SeatsCount >= PersonsCount && t.State == State.Free);
+            table?.SetState(State.Booked);
+            table?.SetOrder(dish, clientId);
 
-            Task.Run(async () => 
-            {
-                await Task.Delay(5000);
-                var table = Tables.FirstOrDefault(t => t.SeatsCount >= PersonsCount && t.State == State.Free);
-                table?.SetState(State.Booked);
-
-                Producer.Send(table is null
-                  ? "УВЕДОМЛЕНИЕ: К сожалению, сейчас все столики заняты."
-                  : $"УВЕДОМЛЕНИЕ: Готово! Ваш столик под номером {table.Id}.");
-            });
+            return table;
         }
 
-        public void FreeBookedTableAsync(int tableId)
+        public async Task BookedTableAsync(int tableId)
         {
-            Producer.Send("Добрый день! Подождите секунду, я проверю ваш столик и подтвержу отмену брони, вам придет уведомление.");
+            await Task.Delay(5000);
+            var table = _tables.FirstOrDefault(t => t.Id == tableId && t.State == State.Booked);
+            table?.SetState(State.Free);
+        }
 
-            Task.Run(async () =>
+        public void CancelBook(Accident accident, Dish? dish = null)
+        {
+            switch (accident)
             {
-                await Task.Delay(5000);
-                var table = Tables.FirstOrDefault(t => t.Id == tableId && t.State == State.Booked);
-                table?.SetState(State.Free);
+                case Accident.Broken:
+                    foreach (var item in _tables) 
+                    { 
+                        if (item.State == State.Booked)
+                        {
+                            item.SetState(State.Free);
+                            _notifier.PublishBookCancelled(item.ClientId, item.Id, Accident.Broken);
+                        }
+                    }
+                    Console.WriteLine($"{DateTime.Now:T} Все бронирования отменены.");
+                    break;
+                case Accident.DishStopped:
+                    foreach (var item in _tables)
+                    {
+                        if (item.Dish == dish)
+                        {
+                            item.SetState(State.Free);
+                            _notifier.PublishBookCancelled(item.ClientId, item.Id, Accident.DishStopped, dish = dish);
+                            Console.WriteLine($"{DateTime.Now:T} Бронирование столика {item.Id} отменено из-за отмены блюда {dish}.");
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
 
-                Producer.Send(table is null
-                   ? "УВЕДОМЛЕНИЕ: К сожалению, указанный вами столик не существует или уже свободен."
-                   : $"УВЕДОМЛЕНИЕ: Готово! Столик под номером {table.Id} теперь свободен.");
-            });
+        public void CancelBook(Guid clientId)
+        {
+            foreach (var item in _tables)
+            {
+                if (item.State == State.Booked && item.ClientId == clientId)
+                {
+                    item.SetState(State.Free);
+                    return;
+                }
+            }
         }
     }
 }
