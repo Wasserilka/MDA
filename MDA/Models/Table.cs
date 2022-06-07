@@ -1,28 +1,38 @@
-﻿using System.ComponentModel;
+﻿using Messaging;
+using System.ComponentModel;
 
-namespace MDA.Models
+namespace Booking.Models
 {
     public class Table
     {
-        private State state;
+        private State _state;
+        private Dish? _dish;
+        private Guid _clientId;
+
         public int Id { get; }
         public State State 
         {
-            get { return state; } 
+            get { return _state; } 
             private set 
             {
-                state = value;
+                _state = value;
                 if (value == State.Booked)
                 {
                     Task.Run(async () => 
                     {
-                        await Task.Delay(60000);
-                        state = State.Free;
+                        await Task.Delay(300000);
+                        _state = State.Free;
                     });
+                }
+                else if (value == State.Free)
+                {
+                    _dish = null;
                 }
             } 
         }
+        public Dish? Dish { get { return _dish; } }
         public int SeatsCount { get; }
+        public Guid ClientId { get { return _clientId; } }
 
         public Table(int id)
         {
@@ -43,5 +53,11 @@ namespace MDA.Models
             State = state;
             return true;
         }
+
+        public void SetOrder(Dish? dish, Guid clientId) 
+        { 
+            _dish = dish;
+            _clientId = clientId;
+        } 
     }
 }
