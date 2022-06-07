@@ -1,39 +1,37 @@
-﻿using Messaging;
+﻿using MassTransit;
+using Messaging;
 
 namespace Kitchen
 {
     public class Accidents
     {
-        private readonly Notifier _notifier;
+        private readonly IBus _bus;
         private readonly KitchenState _kitchenState;
 
-        public Accidents(Notifier notifier, KitchenState kitchenState)
+        public Accidents(IBus bus, KitchenState kitchenState)
         {
-            _notifier = notifier;
+            _bus = bus;
             _kitchenState = kitchenState;
         }
 
-        public void BreakTheKitchen()
+        public async void BreakTheKitchen()
         {
             _kitchenState.IsKitchenBroken = true;
-            _notifier.PublishKitchenAccident();
+            await _bus.Publish<IKitchenAccident>(new KitchenAccident());
             Console.WriteLine($"{DateTime.Now:T} Кухня снова сломалась!");
 
-            Task.Run(async () =>
+            while (_kitchenState.IsKitchenBroken == true)
             {
-                while (_kitchenState.IsKitchenBroken == true)
+                await Task.Delay(2000);
+                if (new Random().Next(1, 101) <= 10)
                 {
-                    await Task.Delay(2000);
-                    if (new Random().Next(1, 101) <= 10)
-                    {
-                        _kitchenState.IsKitchenBroken = false;
-                        Console.WriteLine($"{DateTime.Now:T} Кухня снова работает.");
-                    }
+                    _kitchenState.IsKitchenBroken = false;
+                    Console.WriteLine($"{DateTime.Now:T} Кухня снова работает.");
                 }
-            });
+            }
         }
 
-        public void ChangeDishState(Dish? dish)
+        public async void ChangeDishState(Dish? dish)
         {
             if (_kitchenState.DishStopList.Contains(dish))
             {
@@ -43,7 +41,7 @@ namespace Kitchen
             else
             {
                 _kitchenState.DishStopList.Add(dish);
-                _notifier.PublishKitchenAccident(dish);
+                await _bus.Publish<IKitchenAccident>(new KitchenAccident(dish));
                 Console.WriteLine($"{DateTime.Now:T} Добавлено блюдо в стоп-лист: {dish}");
             }
         }

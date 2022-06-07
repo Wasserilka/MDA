@@ -1,4 +1,6 @@
-﻿namespace Messaging
+﻿using MassTransit;
+
+namespace Messaging
 {
     public interface ITableBooked
     {
@@ -17,7 +19,7 @@
 
         public TableBooked(Guid clientId, int? tableId, Dish? preOrder = null)
         {
-            OrderId = Guid.NewGuid();
+            OrderId = NewId.NextGuid();
             ClientId = clientId;
             PreOrder = preOrder;
             TableId = tableId;

@@ -15,7 +15,7 @@ namespace Booking.Consumers
         
         public Task Consume(ConsumeContext<IKitchenAccident> context)
         {
-            _restaurant.CancelBook(context.Message.Accident, context.Message.Dish);
+            _restaurant.CancelBook(context);
 
             return Task.CompletedTask;
         }

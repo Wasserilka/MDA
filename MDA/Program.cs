@@ -23,6 +23,5 @@ Host.CreateDefaultBuilder(args).ConfigureServices((hostContext, services) =>
     });
 
     services.AddSingleton<Restaurant>();
-    services.AddSingleton<Notifier>();
     services.AddHostedService<Worker>();
 });

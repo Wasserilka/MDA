@@ -22,6 +22,5 @@ Host.CreateDefaultBuilder(args).ConfigureServices((hostContext, services) =>
 
     services.AddSingleton<Accidents>();
     services.AddSingleton<KitchenState>();
-    services.AddSingleton<Notifier>();
     services.AddHostedService<Worker>();
 });

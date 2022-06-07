@@ -2,10 +2,10 @@
 {
     public enum Dish
     {
-        dish_1 = 0,
-        dish_2 = 1,
-        dish_3 = 2,
-        dish_4 = 3,
-        dish_5 = 4
+        RoastedMeat = 0,
+        BakedFish = 1,
+        BoiledCorn = 2,
+        Pancakes = 3,
+        Dumplings = 4
     }
 }

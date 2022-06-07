@@ -5,17 +5,18 @@ namespace Kitchen.Consumers
 {
     public class KitchenTableBookedConsumer : IConsumer<ITableBooked>
     {
-        private readonly Notifier _notifier;
-        public KitchenTableBookedConsumer(Notifier notifier)
+        private readonly KitchenState _kitchenState;
+        public KitchenTableBookedConsumer(KitchenState kitchenState)
         {
-            _notifier = notifier;
+            _kitchenState = kitchenState;
         }
 
         public Task Consume(ConsumeContext<ITableBooked> context)
         {
             if (context.Message.TableId is not null)
             {
-                _notifier.PublishKitchenReady(context.Message.OrderId, context.Message.ClientId, context.Message.PreOrder);
+                var isReady = !_kitchenState.IsKitchenBroken & !_kitchenState.IsDishStopped(context.Message.PreOrder);
+                context.Publish<IKitchenReady>(new KitchenReady(context.Message.OrderId, context.Message.ClientId, isReady));
             }
 
             return Task.CompletedTask;

@@ -1,19 +1,18 @@
-﻿using Messaging;
+﻿using MassTransit;
+using Messaging;
 
 namespace Booking.Models
 {
     public class Restaurant
     {
         private readonly List<Table> _tables = new();
-        private readonly Notifier _notifier;
 
-        public Restaurant(Notifier notifier)
+        public Restaurant()
         {
             for (int i = 1; i <= 10; i++)
             {
                 _tables.Add(new Table(i));
             }
-            _notifier = notifier;
         }
 
         public void BookFreeTable(int PersonsCount)
@@ -47,9 +46,9 @@ namespace Booking.Models
             table?.SetState(State.Free);
         }
 
-        public void CancelBook(Accident accident, Dish? dish = null)
+        public void CancelBook(ConsumeContext<IKitchenAccident> context)
         {
-            switch (accident)
+            switch (context.Message.Accident)
             {
                 case Accident.Broken:
                     foreach (var item in _tables) 
@@ -57,7 +56,7 @@ namespace Booking.Models
                         if (item.State == State.Booked)
                         {
                             item.SetState(State.Free);
-                            _notifier.PublishBookCancelled(item.ClientId, item.Id, Accident.Broken);
+                            context.Publish<IBookCancelled>(new BookCancelled(Accident.Broken, item.Dish, item.ClientId, item.Id));
                         }
                     }
                     Console.WriteLine($"{DateTime.Now:T} Все бронирования отменены.");
@@ -65,11 +64,11 @@ namespace Booking.Models
                 case Accident.DishStopped:
                     foreach (var item in _tables)
                     {
-                        if (item.Dish == dish)
+                        if (item.Dish == context.Message.Dish)
                         {
                             item.SetState(State.Free);
-                            _notifier.PublishBookCancelled(item.ClientId, item.Id, Accident.DishStopped, dish = dish);
-                            Console.WriteLine($"{DateTime.Now:T} Бронирование столика {item.Id} отменено из-за отмены блюда {dish}.");
+                            context.Publish<IBookCancelled>(new BookCancelled(Accident.DishStopped, item.Dish, item.ClientId, item.Id));
+                            Console.WriteLine($"{DateTime.Now:T} Бронирование столика {item.Id} отменено из-за отмены блюда {context.Message.Dish}.");
                         }
                     }
                     break;
